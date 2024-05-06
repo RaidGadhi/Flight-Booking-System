@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <header>
+            <h1>Welcome, [Username]</h1>
+            <nav>
+                <a href="index.html">Home</a>
+                <a href="booking.html">Book Flight</a>
+                <a href="payment.html">Payments</a>
+                <a href="report.html">Reports</a>
+                <a href="logout.html">Logout</a>
+            </nav>
+        </header>
+        <main>
+            <div class="dashboard-sections">
+                <section class="dashboard-card">
+                    <h2>Search Flights</h2>
+                    <p>Find your next journey.</p>
+                    <button onclick="location.href='search.html'">Search</button>
+                </section>
+                <section class="dashboard-card">
+                    <h2>My Bookings</h2>
+                    <p>View and manage your bookings.</p>
+                    <button onclick="location.href='bookings.html'">View Bookings</button>
+                </section>
+                <section class="dashboard-card">
+                    <h2>Account Settings</h2>
+                    <p>Manage your account details.</p>
+                    <button onclick="location.href='settings.html'">Settings</button>
+                </section>
+            </div>
+        </main>
+        <footer>
+            <p>Contact Support | Privacy Policy</p>
+        </footer>
+    </div>
+</body>
+</html>
