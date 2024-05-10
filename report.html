@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Reports</title>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        function handleReportTypeChange() {
+            var reportType = document.getElementById("reportType").value;
+            var dateField = document.getElementById("dateField");
+            var flightNumberField = document.getElementById("flightNumberField");
+
+            if (reportType === "booking" || reportType === "payments") {
+                dateField.style.display = "block";
+                flightNumberField.style.display = "none";
+                document.getElementById("date").required = true;
+                document.getElementById("flightNumber").required = false;
+            } else if (reportType === "cancellations") {
+                flightNumberField.style.display = "block";
+                dateField.style.display = "none";
+                document.getElementById("flightNumber").required = true;
+                document.getElementById("date").required = false;
+            } else {
+                dateField.style.display = "none";
+                flightNumberField.style.display = "none";
+                document.getElementById("date").required = false;
+                document.getElementById("flightNumber").required = false;
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById("reportType").addEventListener("change", handleReportTypeChange);
+            handleReportTypeChange(); // Initial call to set the correct state
+        });
+    </script>
+</head>
+<body>
+    <div class="report-container">
+        <h1>System Reports</h1>
+        <form id="reportForm">
+            <div class="form-group">
+                <label for="reportType">Report Type:</label>
+                <select id="reportType" name="reportType" required>
+                    <option value="">Select a report type</option>
+                    <option value="currentFlight">Current active flight</option>
+                    <option value="booking">Percentage of booking in every flight</option>
+                    <option value="occupancy">Confirmed payments</option>
+                    <option value="cancellations">Waitlisted passengers in each class</option>
+                    <option value="payments">Average load factor for all planes</option>
+                    <option value="ticketCancelled">Ticket cancelled</option>
+                </select>
+            </div>
+            <div class="form-group" id="dateField" style="display: none;">
+                <label for="date">Date:</label>
+                <input type="date" id="date" name="date">
+            </div>
+            <div class="form-group" id="flightNumberField" style="display: none;">
+                <label for="flightNumber">Flight Number:</label>
+                <input type="text" id="flightNumber" name="flightNumber">
+            </div>
+            <button type="submit">Generate Report</button>
+        </form>
+        <div id="reportResults">
+            <!-- Report results will be dynamically inserted here -->
+        </div>
+    </div>
+</body>
+</html>

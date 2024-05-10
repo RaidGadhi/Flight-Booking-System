@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Bookings</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .booking-options {
+            display: none;
+        }
+        .show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="bookings-container">
+        <h1>Manage Your Bookings</h1>
+        <div class="action-buttons">
+            <button onclick="showEditForm()">Edit Ticket</button>
+            <button onclick="showRemoveForm()">Remove Ticket</button>
+        </div>
+        
+        <div id="editForm" class="booking-options">
+            <h2>Edit Ticket</h2>
+            <form onsubmit="return editTicket()">
+                <div class="form-group">
+                    <label for="editTicketId">Ticket ID:</label>
+                    <input type="text" id="editTicketId" name="editTicketId" placeholder="Enter Ticket ID" required>
+                </div>
+                <div class="form-group">
+                    <label for="newSeat">New Seat Number:</label>
+                    <select id="newSeat" name="newSeat" required>
+                        <option value="">Select a seat</option>
+                        <option value="1A">1A</option>
+                        <option value="1B">1B</option>
+                        <option value="2A">2A</option>
+                        <option value="2B">2B</option>
+                        <!-- Add more seats as needed -->
+                    </select>
+                </div>
+                <button type="submit">Update Ticket</button>
+            </form>
+        </div>
+
+        <div id="removeForm" class="booking-options">
+            <h2>Remove Ticket</h2>
+            <form onsubmit="return removeTicket()">
+                <div class="form-group">
+                    <label for="removeTicketId">Ticket ID:</label>
+                    <input type="text" id="removeTicketId" name="removeTicketId" placeholder="Enter Ticket ID" required>
+                </div>
+                <button type="submit">Remove Ticket</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function showEditForm() {
+            document.getElementById('editForm').classList.add('show');
+            document.getElementById('removeForm').classList.remove('show');
+        }
+
+        function showRemoveForm() {
+            document.getElementById('editForm').classList.remove('show');
+            document.getElementById('removeForm').classList.add('show');
+        }
+
+        function editTicket() {
+            const ticketId = document.getElementById('editTicketId').value;
+            const newSeat = document.getElementById('newSeat').value;
+
+            if (ticketId && newSeat) {
+                alert(`Ticket ${ticketId} has been updated to seat ${newSeat}.`);
+                // Here, you would normally send this data to the server for processing
+            } else {
+                alert('Please fill in all fields.');
+            }
+
+            return false; // Prevent actual form submission
+        }
+
+        function removeTicket() {
+            const ticketId = document.getElementById('removeTicketId').value;
+
+            if (ticketId) {
+                alert(`Ticket ${ticketId} has been removed.`);
+                // Here, you would normally send this data to the server for processing
+            } else {
+                alert('Please enter a Ticket ID.');
+            }
+
+            return false; // Prevent actual form submission
+        }
+    </script>
+</body>
+</html>

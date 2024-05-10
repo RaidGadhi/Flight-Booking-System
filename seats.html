@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Your Seat</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="seats-container">
+        <h1>Select Your Seat</h1>
+        <form id="seatForm" onsubmit="return proceedToPayment()">
+            <div class="form-group">
+                <label for="seatNumber">Seat Number:</label>
+                <select id="seatNumber" name="seatNumber" required>
+                    <option value="">Select a seat</option>
+                    <option value="1A">1A</option>
+                    <option value="1B">1B</option>
+                    <option value="2A">2A</option>
+                    <option value="2B">2B</option>
+                    <!-- Add more seats as needed -->
+                </select>
+            </div>
+            <button type="submit">Confirm Seat</button>
+        </form>
+    </div>
+
+    <script>
+        function proceedToPayment() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const flightNumber = urlParams.get('flightNumber');
+            const flightClass = urlParams.get('class');
+            const seatNumber = document.getElementById('seatNumber').value;
+
+            if (seatNumber) {
+                alert('Seat selected! Proceeding to payment...');
+                window.location.href = `payment.html?flightNumber=${flightNumber}&class=${flightClass}&seatNumber=${seatNumber}`;
+            } else {
+                alert('Please select a seat.');
+            }
+
+            return false; // Prevent actual form submission
+        }
+    </script>
+</body>
+</html>
