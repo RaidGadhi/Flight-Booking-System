@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promote Waitlisted Passenger</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="promote-container">
+        <h1>Promote Waitlisted Passenger</h1>
+        <form id="promoteForm" onsubmit="return promotePassenger()">
+            <div class="form-group">
+                <label for="passengerId">Passenger ID:</label>
+                <input type="text" id="passengerId" name="passengerId" placeholder="Enter Passenger ID" required>
+            </div>
+            <div class="form-group">
+                <label for="flightNumber">Flight Number:</label>
+                <input type="text" id="flightNumber" name="flightNumber" placeholder="Enter Flight Number" required>
+            </div>
+            <div class="form-group">
+                <label for="newSeat">New Seat Number:</label>
+                <select id="newSeat" name="newSeat" required>
+                    <option value="">Select a seat</option>
+                    <option value="1A">1A</option>
+                    <option value="1B">1B</option>
+                    <option value="2A">2A</option>
+                    <option value="2B">2B</option>
+                    <!-- Add more seats as needed -->
+                </select>
+            </div>
+            <button type="submit">Promote</button>
+        </form>
+    </div>
+
+    <script>
+        function promotePassenger() {
+            const passengerId = document.getElementById('passengerId').value;
+            const flightNumber = document.getElementById('flightNumber').value;
+            const newSeat = document.getElementById('newSeat').value;
+
+            if (passengerId && flightNumber && newSeat) {
+                alert(`Passenger ${passengerId} has been promoted to seat ${newSeat} on flight ${flightNumber}.`);
+                // Here, you would normally send this data to the server for processing
+            } else {
+                alert('Please fill in all fields.');
+            }
+
+            return false; // Prevent actual form submission
+        }
+    </script>
+</body>
+</html>

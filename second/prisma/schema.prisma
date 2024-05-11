@@ -1,0 +1,87 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model aircraft {
+  aircraftid         Int                @id
+  aircrafttype       String?            @db.VarChar(255)
+  firstclassprice    Decimal?           @db.Decimal(10, 2)
+  economyprice       Decimal?           @db.Decimal(10, 2)
+  businessclassprice Decimal?           @db.Decimal(10, 2)
+  flights            flights[]
+  maintenancedates   maintenancedates[]
+  seats              seats[]
+}
+
+model flights {
+  flightid   Int       @id
+  srccity    String?   @db.VarChar(255)
+  dstcity    String?   @db.VarChar(255)
+  flightdate DateTime? @db.Date
+  flighttime DateTime? @db.Time(6)
+  flightno   String?   @db.VarChar(255)
+  aircraftid Int?
+  aircraft   aircraft? @relation(fields: [aircraftid], references: [aircraftid], onDelete: NoAction, onUpdate: NoAction)
+  tickets    tickets[]
+}
+
+model maintenancedates {
+  mdates     DateTime @db.Date
+  aircraftid Int
+  aircraft   aircraft @relation(fields: [aircraftid], references: [aircraftid], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([mdates, aircraftid])
+}
+
+model passenger {
+  passengerid Int        @id
+  phone       String?    @db.VarChar(255)
+  email       String?    @db.VarChar(255)
+  name        String?    @db.VarChar(255)
+  payments    payments[]
+  tickets     tickets[]
+}
+
+model payments {
+  paymentid     Int        @id
+  amount        Decimal?   @db.Decimal(10, 2)
+  paymentdate   DateTime?  @db.Date
+  paymentmethod String?    @db.VarChar(255)
+  passengerid   Int?
+  passenger     passenger? @relation(fields: [passengerid], references: [passengerid], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model playing_with_neon {
+  id    Int    @id @default(autoincrement())
+  name  String
+  value Float? @db.Real
+}
+
+model seats {
+  seatid     Int       @id
+  seatnumber String?   @db.VarChar(255)
+  isbooked   Boolean?
+  seatclass  String?   @db.VarChar(255)
+  aircraftid Int?
+  aircraft   aircraft? @relation(fields: [aircraftid], references: [aircraftid], onDelete: NoAction, onUpdate: NoAction)
+  tickets    tickets[]
+}
+
+model tickets {
+  ticketno    Int        @id
+  passengerid Int?
+  flightid    Int?
+  status      String?    @db.VarChar(255)
+  bookingdate DateTime?  @db.Date
+  price       Decimal?   @db.Decimal(10, 2)
+  class       String?    @db.VarChar(255)
+  seatid      Int?
+  flights     flights?   @relation(fields: [flightid], references: [flightid], onDelete: NoAction, onUpdate: NoAction)
+  passenger   passenger? @relation(fields: [passengerid], references: [passengerid], onDelete: NoAction, onUpdate: NoAction)
+  seats       seats?     @relation(fields: [seatid], references: [seatid], onDelete: NoAction, onUpdate: NoAction)
+}

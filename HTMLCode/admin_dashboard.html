@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <header>
+            <h1>Welcome, Admin</h1>
+            <nav>
+                <a href="index.html">Home</a>
+                <a href="search_flights.html">Book Flight</a>
+            </nav>
+        </header>
+        <main>
+            <div class="dashboard-sections">
+                <section class="dashboard-card">
+                    <h2>Generate Reports</h2>
+                    <p>Create detailed reports on bookings, cancellations, and more.</p>
+                    <button onclick="location.href='report.html'">Generate Reports</button>
+                </section>
+                <section class="dashboard-card">
+                    <h2>My Bookings</h2>
+                    <p>Manage your bookings.
+                    </p>
+                    <button onclick="location.href='bookings.html'">Bookings</button>
+                </section>
+                <section class="dashboard-card">
+                    <h2>Promote Waitlisted Passenger</h2>
+                    <p>Elevate passengers from the waitlist to confirmed seats.</p>
+                    <button onclick="location.href='promote_waitlist.html'">Promote</button>
+                </section>
+            </div>
+        </main>
+        <footer>
+            <p>Contact Support | Privacy Policy</p>
+        </footer>
+    </div>
+</body>
+</html>
