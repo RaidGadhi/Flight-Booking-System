@@ -2,7 +2,6 @@
 import React from 'react';
 import Link from 'next/link';
 import Head from 'next/head';
-import styles from './passengerDashboard.module.css'; // Assuming CSS module
 
 
 export default function passenger_dashboard() {
@@ -84,7 +83,7 @@ export default function passenger_dashboard() {
                 <header>
                     <h1>Welcome to Your Dashboard</h1>
                     <nav>
-                        <Link href="/index"><a>Home</a></Link>
+                        <Link href="/index"><div>Home</div></Link>
                     </nav>
                 </header>
                 <main>
@@ -92,12 +91,12 @@ export default function passenger_dashboard() {
                         <section className="dashboard-card">
                             <h2>Search Flights</h2>
                             <p>Find your next journey.</p>
-                            <Link href="/search_flights"><a className="button">Search</a></Link>
+                            <Link href="/search_flights"><div className="button">Search</div></Link>
                         </section>
                         <section className="dashboard-card">
                             <h2>My Bookings</h2>
                             <p>Manage your bookings.</p>
-                            <Link href="/bookings"><a className="button">Bookings</a></Link>
+                            <Link href="/bookings"><div className="button">Bookings</div></Link>
                         </section>
                     </div>
                 </main>

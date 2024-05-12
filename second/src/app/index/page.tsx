@@ -13,8 +13,8 @@ export default function index() {
                 <header>
                     <h1>Airline Booking System</h1>
                     <nav>
-                        <Link href="/admin_dashboard"><a className="button">Admin</a></Link>
-                        <Link href="/passenger_dashboard"><a className="button">Passenger</a></Link>
+                        <Link href="/admin_dashboard"><span className="button">Admin</span></Link>
+                        <Link href="/passenger_dashboard"><span className="button">Passenger</span></Link>
                     </nav>
                 </header>
                 <main>
