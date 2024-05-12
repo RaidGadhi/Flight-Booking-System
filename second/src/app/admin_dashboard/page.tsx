@@ -2,7 +2,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Head from 'next/head';
-export default function admin_dashboard() {
+export default function Admin_dashboard() {
     return (
         <>
 
@@ -13,8 +13,8 @@ export default function admin_dashboard() {
                 <header>
                     <h1>Welcome, Admin</h1>
                     <nav>
-                        <Link href="/index"><a>Home</a></Link>
-                        <Link href="/search_flights"><a>Book Flight</a></Link>
+                        <Link href="/index"><div>Home</div></Link>
+                        <Link href="/search_flights"><div>Book Flight</div></Link>
                     </nav>
                 </header>
                 <main>

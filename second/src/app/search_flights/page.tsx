@@ -2,7 +2,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Head from 'next/head';
-export default function search_flights() {
+export default function Search_flights() {
     const bookFlight = (flightNumber: string, flightClass: string) => {
         // Ideally, replace this with your navigation logic
         alert(`Booking flight: ${flightNumber} in ${flightClass}`);

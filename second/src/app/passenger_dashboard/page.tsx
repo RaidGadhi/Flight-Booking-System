@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Head from 'next/head';
 
 
-export default function passenger_dashboard() {
+export default function Passenger_dashboard() {
 
     return (
         <>
