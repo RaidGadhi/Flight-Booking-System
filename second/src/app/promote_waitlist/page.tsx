@@ -24,7 +24,6 @@ export default function Promote_waitlist() {
         <>
             <Head>
                 <title>Promote Waitlisted Passenger</title>
-                <link rel="stylesheet" href="/style.css" />
             </Head>
             <div className="promote-container">
                 <h1>Promote Waitlisted Passenger</h1>
