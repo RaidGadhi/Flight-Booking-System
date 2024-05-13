@@ -42,4 +42,21 @@ export default class ProfileHandler {
                 return undefined;
             });
     }
+
+    static async createDB(): Promise<aircraft[]> { //change promise type and function name
+        return await fetch("/api/aircraft", { //change api directory
+            method: "GET",
+        })
+            .then(async (res) => {
+                if (res.status == 200) {
+                    return await res.json();
+                } else {
+                    return undefined;
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+                return undefined;
+            });
+    }
 }
