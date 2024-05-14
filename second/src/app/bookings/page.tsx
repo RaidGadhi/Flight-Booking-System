@@ -2,6 +2,7 @@
 "use client";
 import React, { useState } from 'react';
 import Head from 'next/head';
+import { flights } from '@prisma/client';
 
 export default function Bookings() {
     const [showEditForm, setShowEditForm] = useState(false);
@@ -36,6 +37,9 @@ export default function Bookings() {
             alert('Please enter a Ticket ID.');
         }
     };
+
+    //short term solution
+    let flight: flights;
 
     return (
         <>

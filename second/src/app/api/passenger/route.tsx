@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import PrismaServices from "../Prisma-Services";
-import { passengerInterface } from "@/bkEnd/bkEndHandler";
+import { passengerInterface } from "@/app/bkEnd/bkEndHandler";
 import { passenger } from "@prisma/client";
 
 const prisma = PrismaServices.instance;

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import PrismaServices from "../Prisma-Services";
-import { paymentsInterface } from "@/bkEnd/bkEndHandler";
+import { paymentsInterface } from "@/app/bkEnd/bkEndHandler";
 
 const prisma = PrismaServices.instance;
 

@@ -1,14 +1,38 @@
 "use client";
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Head from 'next/head';
+import bkEndHandler from "../bkEnd/bkEndHandler"
+import { flights } from '@prisma/client';
+
+
+async function getflights() {
+    const flights: flights[] = await bkEndHandler.getAllFlights();
+    return flights;
+}
+
 export default function Search_flights() {
-    const bookFlight = (flightNumber: string, flightClass: string) => {
+    const bookFlight = (flightNumber: flights, flightClass: string) => {
         // Ideally, replace this with your navigation logic
         alert(`Booking flight: ${flightNumber} in ${flightClass}`);
-        // For actual redirection, use Next.js router or window.location if outside of Next.js scope
-        // window.location.href = `/seats?flightNumber=${flightNumber}&class=${flightClass}`;
+        const exportedflight: flights = flightNumber;
     };
+
+    const flights = getflights();
+    //for mapping
+    const [flights2, setDiseases] = useState<flights[]>([]);
+
+    useEffect(() => {
+        flights
+            .then((data) => {
+                setDiseases(data);
+            })
+            .catch((error) => {
+                console.error("Failed to load diseases:", error);
+            });
+    }, [flights]);
+    //for mapping
+
 
     return (
         <>
@@ -83,72 +107,19 @@ export default function Search_flights() {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>New York</td>
-                            <td>London</td>
-                            <td>2024-05-15</td>
-                            <td>NY1001</td>
-                            <td>08:00 AM</td>
-                            <td>08:00 PM</td>
-                            <td>Economy</td>
-                            <td>$500</td>
-                            <td><button onClick={() => bookFlight('NY1001', 'Economy')}>Book Now</button></td>
-                        </tr>
-                        <tr>
-                            <td>New York</td>
-                            <td>London</td>
-                            <td>2024-05-15</td>
-                            <td>NY1002</td>
-                            <td>09:00 AM</td>
-                            <td>09:00 PM</td>
-                            <td>Business</td>
-                            <td>$1000</td>
-                            <td><button onClick={() => bookFlight('NY1001', 'Economy')}>Book Now</button></td>
-                        </tr>
-                        <tr>
-                            <td>New York</td>
-                            <td>London</td>
-                            <td>2024-05-15</td>
-                            <td>NY1003</td>
-                            <td>10:00 AM</td>
-                            <td>10:00 PM</td>
-                            <td>First Class</td>
-                            <td>$1500</td>
-                            <td><button onClick={() => bookFlight('NY1001', 'Economy')}>Book Now</button></td>
-                        </tr>
-                        <tr>
-                            <td>Paris</td>
-                            <td>Tokyo</td>
-                            <td>2024-06-20</td>
-                            <td>PR2001</td>
-                            <td>07:00 AM</td>
-                            <td>07:00 PM</td>
-                            <td>Economy</td>
-                            <td>$700</td>
-                            <td><button onClick={() => bookFlight('NY1001', 'Economy')}>Book Now</button></td>
-                        </tr>
-                        <tr>
-                            <td>Paris</td>
-                            <td>Tokyo</td>
-                            <td>2024-06-20</td>
-                            <td>PR2002</td>
-                            <td>08:00 AM</td>
-                            <td>08:00 PM</td>
-                            <td>Business</td>
-                            <td>$1200</td>
-                            <td><button onClick={() => bookFlight('NY1001', 'Economy')}>Book Now</button></td>
-                        </tr>
-                        <tr>
-                            <td>Paris</td>
-                            <td>Tokyo</td>
-                            <td>2024-06-20</td>
-                            <td>PR2003</td>
-                            <td>09:00 AM</td>
-                            <td>09:00 PM</td>
-                            <td>First Class</td>
-                            <td>$1800</td>
-                            <td><button onClick={() => bookFlight('NY1001', 'Economy')}>Book Now</button></td>
-                        </tr>
+                        {flights2.map((flight) => (
+                            <tr key={flight.flightid}>
+                                <td>{flight.srccity}</td>
+                                <td>{flight.dstcity}</td>
+                                <td>{flight.flightdate?.toLocaleDateString()}</td>
+                                <td>{flight.flightno}</td>
+                                <td>{flight.flighttime?.toLocaleTimeString()}</td>
+                                <td>{/* Assuming arrival time calculation or another data source */}</td>
+                                <td>{/* Assume class data to be provided or derived */}</td>
+                                <td>{/* Assume price data to be provided or derived */}</td>
+                                <td><button onClick={() => bookFlight(flight, 'Economy')}>Book Now</button></td>
+                            </tr>
+                        ))}
                     </tbody>
                 </table>
             </div>

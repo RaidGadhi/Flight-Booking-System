@@ -25,7 +25,7 @@ export interface passengerInterface {
     name: string
 }
 
-export default class ProfileHandler {
+export default class bkEndHandler {
     private constructor() { }
 
     static async getAllairCrafts(): Promise<aircraft[]> { //change promise type and function name
@@ -80,7 +80,7 @@ export default class ProfileHandler {
             });
     }
 
-    static async getAllFlights(): Promise<flights> { //change promise type
+    static async getAllFlights(): Promise<flights[]> { //change promise type
         return await fetch("/api/flights", { //change api directory
             method: "GET",
         })
@@ -96,7 +96,8 @@ export default class ProfileHandler {
                 return undefined;
             });
     }
-
+    // const ticket : ticketsInterface = {}
+    //createTicket(ticket) ---> tickit:tickets
     static async createTicket(t: ticketsInterface): Promise<tickets> { //change promise type and function name
         return await fetch("/api/tickets", { //change api directory
             method: "POST",
