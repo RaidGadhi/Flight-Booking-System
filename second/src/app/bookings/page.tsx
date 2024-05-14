@@ -3,8 +3,11 @@
 import React, { useState } from 'react';
 import Head from 'next/head';
 import { flights } from '@prisma/client';
+import { useRouter } from 'next/router';
 
 export default function Bookings() {
+    // const router = useRouter();
+    // const flightId = router.query.flightId as string; // Use the flightId to fetch or manipulate flight data
     const [showEditForm, setShowEditForm] = useState(false);
     const [showRemoveForm, setShowRemoveForm] = useState(false);
     const [ticketId, setTicketId] = useState('');
@@ -38,8 +41,6 @@ export default function Bookings() {
         }
     };
 
-    //short term solution
-    let flight: flights;
 
     return (
         <>

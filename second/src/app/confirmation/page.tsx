@@ -11,6 +11,7 @@ interface BookingDetails {
     arrivalDateTime: string;
     travelClass: string;
     price: string;
+    ticketID: string
 }
 
 export default function Confirmation({ details }: { details: BookingDetails }) {
@@ -28,6 +29,7 @@ export default function Confirmation({ details }: { details: BookingDetails }) {
                     <p><strong>Arrival:</strong> {details.arrivalCity} - {details.arrivalDateTime}</p>
                     <p><strong>Class:</strong> {details.travelClass}</p>
                     <p><strong>Price:</strong> {details.price}</p>
+                    <p><strong>ticketID:</strong> {details.ticketID}</p>
                 </div>
                 <div className="action-buttons">
                     <button onClick={() => window.print()}>Print Ticket</button>

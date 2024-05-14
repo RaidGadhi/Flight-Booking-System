@@ -4,6 +4,8 @@ import Link from 'next/link';
 import Head from 'next/head';
 import bkEndHandler from "../bkEnd/bkEndHandler"
 import { flights } from '@prisma/client';
+import { useRouter } from 'next/router';
+
 
 
 async function getflights() {
@@ -12,10 +14,13 @@ async function getflights() {
 }
 
 export default function Search_flights() {
-    const bookFlight = (flightNumber: flights, flightClass: string) => {
-        // Ideally, replace this with your navigation logic
-        alert(`Booking flight: ${flightNumber} in ${flightClass}`);
-        const exportedflight: flights = flightNumber;
+    const router = useRouter();
+    const bookFlight = (flight: flights, flightClass: string) => {
+        alert(`Booking flight: ${flight} in ${flightClass}`);
+        router.push({
+            pathname: '/seats',
+            query: { flightId: flight.flightid }
+        });
     };
 
     const flights = getflights();
@@ -101,8 +106,6 @@ export default function Search_flights() {
                             <th>Flight Number</th>
                             <th>Departure Time</th>
                             <th>Arrival Time</th>
-                            <th>Class</th>
-                            <th>Price</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -111,12 +114,10 @@ export default function Search_flights() {
                             <tr key={flight.flightid}>
                                 <td>{flight.srccity}</td>
                                 <td>{flight.dstcity}</td>
-                                <td>{flight.flightdate?.toLocaleDateString()}</td>
+                                <td>{flight.flightdate ? new Date(flight.flightdate).toISOString() : new Date().toISOString()}</td>
                                 <td>{flight.flightno}</td>
-                                <td>{flight.flighttime?.toLocaleTimeString()}</td>
+                                <td>{flight.flighttime ? new Date(flight.flighttime).toISOString() : new Date().toISOString()}</td>
                                 <td>{/* Assuming arrival time calculation or another data source */}</td>
-                                <td>{/* Assume class data to be provided or derived */}</td>
-                                <td>{/* Assume price data to be provided or derived */}</td>
                                 <td><button onClick={() => bookFlight(flight, 'Economy')}>Book Now</button></td>
                             </tr>
                         ))}

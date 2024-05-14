@@ -3,9 +3,11 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
+import { seats } from '@prisma/client';
 export default function Seats() {
     const [seatNumber, setSeatNumber] = useState('');
     const router = useRouter();
+    const flightId = router.query.flightId as string; // Use the flightId to fetch or manipulate flight data
 
     const proceedToPayment = (event: React.FormEvent) => {
         event.preventDefault(); // Prevent the form from actually submitting
@@ -16,16 +18,14 @@ export default function Seats() {
         }
 
         alert('Seat selected! Proceeding to payment...');
-
-        // Extract query parameters
-        const { flightNumber, flightClass } = router.query;
-
-        // Navigate to the payment page with query parameters
         router.push({
             pathname: '/payment',
-            query: { flightNumber, flightClass, seatNumber }
+            query: { flightId: flightId, seatId: seat.seatid }
         });
     };
+
+    let s: seats;
+
 
     return (
         <>
