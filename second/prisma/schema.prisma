@@ -42,7 +42,7 @@ model maIntenancedates {
 model passenger {
   passengerid String     @id @default(uuid())
   phone       String?
-  email       String?
+  email       String     @unique
   name        String?
   payments    payments[]
   tickets     tickets[]
@@ -70,21 +70,27 @@ model seats {
 }
 
 model tickets {
-  ticketno    String     @id @default(uuid())
+  ticketno    String        @id @default(uuid())
   passengerid String?
   flightid    String?
-  status      String?
+  status      TicketStatus?
   bookingdate DateTime?
   price       Int?
-  class       String?
-  seatid      String?    @unique
-  flights     flights?   @relation(fields: [flightid], references: [flightid], onDelete: NoAction, onUpdate: NoAction)
-  passenger   passenger? @relation(fields: [passengerid], references: [passengerid], onDelete: NoAction, onUpdate: NoAction)
-  seats       seats?     @relation(fields: [seatid], references: [seatid], onDelete: NoAction, onUpdate: NoAction)
+  // class       String?
+  seatid      String?       @unique
+  flights     flights?      @relation(fields: [flightid], references: [flightid], onDelete: NoAction, onUpdate: NoAction)
+  passenger   passenger?    @relation(fields: [passengerid], references: [passengerid], onDelete: NoAction, onUpdate: NoAction)
+  seats       seats?        @relation(fields: [seatid], references: [seatid], onDelete: NoAction, onUpdate: NoAction)
 }
 
 enum SeatClass {
   econnomy
   business
   firstClass
+}
+
+enum TicketStatus {
+  Active
+  Waitlisted
+  Cancelled
 }
