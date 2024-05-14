@@ -1,9 +1,10 @@
 // Use client directive is already defined, assuming the rest of the imports are correct.
 "use client";
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
-import { flights } from '@prisma/client';
+import { TicketStatus, flights, seats } from '@prisma/client';
 import { useRouter } from 'next/router';
+import bkEndHandler from '../bkEnd/bkEndHandler';
 
 export default function Bookings() {
     // const router = useRouter();
@@ -11,7 +12,10 @@ export default function Bookings() {
     const [showEditForm, setShowEditForm] = useState(false);
     const [showRemoveForm, setShowRemoveForm] = useState(false);
     const [ticketId, setTicketId] = useState('');
+    const [availableSeats, setAvailableSeats] = useState<seats[]>([]);
     const [newSeat, setNewSeat] = useState('');
+    const [selectedSeat, setSelectedSeat] = useState<string>('');
+
 
     const handleEditForm = () => {
         setShowEditForm(true);
@@ -23,23 +27,102 @@ export default function Bookings() {
         setShowRemoveForm(true);
     };
 
-    const editTicket = (e: React.FormEvent) => {
+    const removeTicket = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (ticketId && newSeat) {
-            alert(`Ticket ${ticketId} has been updated to seat ${newSeat}.`);
-        } else {
-            alert('Please fill in all fields.');
+        if (!ticketId) {
+            alert('Please enter a Ticket ID.');
+            return;
+        }
+
+        try {
+            const allTickets = await bkEndHandler.getAllTickets();
+            const ticketToRemove = allTickets.find(ticket => ticket.ticketno === ticketId);
+
+            if (ticketToRemove) {
+                // Update ticket status to 'cancelled'
+                const updatedTicket = { ...ticketToRemove, status: TicketStatus.Cancelled };
+                await bkEndHandler.updateTicket(updatedTicket);
+
+                // Fetch all seats and find the linked seat
+                const allSeats = await bkEndHandler.getAllSeats();
+                const linkedSeat = allSeats.find(seat => seat.seatid === ticketToRemove.seatid);
+
+                if (linkedSeat) {
+                    // Update the seat to set isbooked to false
+                    const updatedSeat = { ...linkedSeat, isbooked: false };
+                    await bkEndHandler.updateSeat(updatedSeat);
+                }
+
+                alert(`Ticket ${ticketId} has been cancelled and the seat has been freed.`);
+            } else {
+                alert('Ticket not found.');
+            }
+        } catch (error) {
+            console.error('Failed to remove ticket:', error);
+            alert('Failed to remove ticket.');
         }
     };
 
-    const removeTicket = (e: React.FormEvent) => {
+    // Handler to trigger edit form submission
+    const editTicket = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (ticketId) {
-            alert(`Ticket ${ticketId} has been removed.`);
-        } else {
+        if (!ticketId) {
             alert('Please enter a Ticket ID.');
+            return;
+        }
+
+        const allTickets = await bkEndHandler.getAllTickets();
+        const ticketToEdit = allTickets.find(ticket => ticket.ticketno === ticketId);
+
+        if (!ticketToEdit) {
+            alert('Ticket not found.');
+            return;
+        }
+
+        const allSeats = await bkEndHandler.getAllSeats();
+        const currentSeat = allSeats.find(seat => seat.seatid === ticketToEdit.seatid);
+        const newSeat = allSeats.find(seat => seat.seatid === selectedSeat);
+
+        // Proceed only if the new seat is different from the current and is not booked
+        if (newSeat && !newSeat.isbooked && currentSeat && newSeat.seatid !== currentSeat.seatid) {
+            // Update the new seat to booked
+            await bkEndHandler.updateSeat({ ...newSeat, isbooked: true });
+
+            // Update the old seat to not booked
+            await bkEndHandler.updateSeat({ ...currentSeat, isbooked: false });
+
+            // Update the ticket with new seat id
+            await bkEndHandler.updateTicket({ ...ticketToEdit, seatid: newSeat.seatid });
+
+            alert(`Ticket updated to new seat ${newSeat.seatnumber}.`);
+        } else {
+            alert('New seat is either already booked or the same as the current seat.');
         }
     };
+
+    // Fetch available seats for a specific flight
+    const fetchSeats = async (flightId: string) => {
+        const seats = await bkEndHandler.getAllSeats();
+        const emptySeats = seats.filter(seat => seat.flightsFlightid === flightId && !seat.isbooked);
+        setAvailableSeats(emptySeats);
+    };
+
+    // Update available seats when a ticket ID is entered and validated
+    useEffect(() => {
+        const loadTicketDetails = async () => {
+            const allTickets = await bkEndHandler.getAllTickets();
+            const foundTicket = allTickets.find(ticket => ticket.ticketno === ticketId);
+            if (foundTicket?.flightid) {
+                await fetchSeats(foundTicket.flightid);
+            }
+        };
+
+        if (ticketId) {
+            loadTicketDetails();
+        }
+    }, [ticketId]);
+
+
 
 
     return (
@@ -65,13 +148,11 @@ export default function Bookings() {
                             </div>
                             <div className="form-group">
                                 <label htmlFor="newSeat">New Seat Number:</label>
-                                <select id="newSeat" name="newSeat" required
-                                    value={newSeat} onChange={e => setNewSeat(e.target.value)}>
-                                    <option value="">Select a seat</option>
-                                    <option value="1A">1A</option>
-                                    <option value="1B">1B</option>
-                                    <option value="2A">2A</option>
-                                    <option value="2B">2B</option>
+                                <select value={selectedSeat} onChange={e => setSelectedSeat(e.target.value)} required>
+                                    <option value="">Select a new seat</option>
+                                    {availableSeats.map(seat => (
+                                        <option key={seat.seatid} value={seat.seatid}>{seat.seatnumber}</option>
+                                    ))}
                                 </select>
                             </div>
                             <button type="submit">Update Ticket</button>

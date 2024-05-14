@@ -1,83 +1,149 @@
-"use client";
-import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
+import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
+import bkEndHandler from '../bkEnd/bkEndHandler';
+import { aircraft, flights, payments, seats, tickets } from '@prisma/client';
 
 export default function Report() {
     const [reportType, setReportType] = useState('');
-    const [dateRequired, setDateRequired] = useState(false);
-    const [flightNumberRequired, setFlightNumberRequired] = useState(false);
-    const [showDateField, setShowDateField] = useState(false);
-    const [showFlightNumberField, setShowFlightNumberField] = useState(false);
+    const [flights, setFlights] = useState<flights[]>([]);
+    const [payments, setPayments] = useState<payments[]>([]);
+    const [tickets, setTickets] = useState<tickets[]>([]);
+    const [aircrafts, setAircrafts] = useState<aircraft[]>([]);
+    const [seats, setSeats] = useState<seats[]>([]);
+
 
     useEffect(() => {
-        handleReportTypeChange(); // Adjust fields on report type change
+        async function fetchData() {
+            if (['currentFlight', 'booking'].includes(reportType)) {
+                const fetchedFlights = await bkEndHandler.getAllFlights();
+                setFlights(fetchedFlights.filter(flight => flight.flightdate ? flight.flightdate : new Date() > new Date()));
+            }
+            if (reportType == 'booking') {
+                const fetchedSeats = await bkEndHandler.getAllSeats();
+                setSeats(fetchedSeats);
+            }
+            if (reportType == 'payments') {
+                const fetchedPayments = await bkEndHandler.getAllpayments();
+                setPayments(fetchedPayments);
+            }
+            if (reportType == 'Waitlisted') {
+                const fetchedTickets = await bkEndHandler.getAllTickets();
+                setTickets(fetchedTickets.filter(ticket => ticket.status === 'Waitlisted'));
+            }
+            if (reportType == 'occupancy') {
+                const fetchedAircrafts = await bkEndHandler.getAllairCrafts();
+                setAircrafts(fetchedAircrafts);
+            }
+            if (reportType == 'ticketCancelled') {
+                const fetchedTickets = await bkEndHandler.getAllTickets();
+                setTickets(fetchedTickets.filter(ticket => ticket.status === 'Cancelled'));
+            }
+        }
+        fetchData();
     }, [reportType]);
 
-    const handleReportTypeChange = () => {
+    const calculateBookingPercentage = () => {
+        return flights.map(flight => {
+            const flightSeats = seats.filter(seat => seat.flightsFlightid === flight.flightid);
+            const bookedSeats = flightSeats.filter(seat => seat.isbooked);
+            const bookingPercentage = flightSeats.length > 0
+                ? (bookedSeats.length / flightSeats.length) * 100
+                : 0;
+            return {
+                flightid: flight.flightid,
+                bookingPercentage: bookingPercentage.toFixed(2)  // Keep two decimals for percentage
+            };
+        });
+    };
+
+    const calculateLoadFactor = () => {
+        return aircrafts.map(aircraft => {
+            const aircraftFlights = flights.filter(flight => flight.aircraftid === aircraft.aircraftid);
+            const loadFactor = aircraftFlights.length;
+            return {
+                aircraftid: aircraft.aircraftid,
+                loadFactor: loadFactor
+            };
+        });
+    };
+
+    const renderReportResults = () => {
         switch (reportType) {
-            case "booking":
-            case "payments":
-                setShowDateField(true);
-                setShowFlightNumberField(false);
-                setDateRequired(true);
-                setFlightNumberRequired(false);
-                break;
-            case "cancellations":
-                setShowFlightNumberField(true);
-                setShowDateField(false);
-                setFlightNumberRequired(true);
-                setDateRequired(false);
-                break;
+            case 'currentFlight':
+                return flights.map(flight => (
+                    <tr key={flight.flightid}>
+                        <td>{flight.flightno}</td>
+                        <td>{flight.srccity}</td>
+                        <td>{flight.dstcity}</td>
+                        <td>{flight.flightdate ? new Date(flight.flightdate).toISOString() : new Date().toISOString()}</td>
+                    </tr>
+                ));
+            case 'booking':
+                const bookingData = calculateBookingPercentage();
+                return bookingData.map(data => (
+                    <tr key={data.flightid}>
+                        <td>{data.flightid}</td>
+                        <td>{data.bookingPercentage}%</td>
+                    </tr>
+                )); return null;
+            case 'payments':
+                return payments.map(payment => (
+                    <tr key={payment.paymentid}>
+                        <td>{payment.amount}</td>
+                        <td>{payment.paymentdate ? new Date(payment.paymentdate).toISOString() : new Date().toISOString()}</td>
+                        <td>{payment.paymentmethod}</td>
+                    </tr>
+                ));
+            case 'Waitlisted':
+                return tickets.map(ticket => (
+                    <tr key={ticket.ticketno}>
+                        <td>{ticket.flightid}</td>
+                        <td>{ticket.passengerid}</td>
+                        <td>{ticket.status}</td>
+                    </tr>
+                ));
+            case 'occupancy':
+                const loadFactorData = calculateLoadFactor();
+                return loadFactorData.map(data => (
+                    <tr key={data.aircraftid}>
+                        <td>{data.aircraftid}</td>
+                        <td>{data.loadFactor}</td>
+                    </tr>
+                )); return null;
+            case 'ticketCancelled':
+                return tickets.map(ticket => (
+                    <tr key={ticket.ticketno}>
+                        <td>{ticket.ticketno}</td>
+                        <td>{ticket.status}</td>
+                    </tr>
+                ));
             default:
-                setShowDateField(false);
-                setShowFlightNumberField(false);
-                setDateRequired(false);
-                setFlightNumberRequired(false);
-                break;
+                return null;
         }
     };
 
     return (
         <>
             <Head>
-                <title>System Reports</title>
-                <link rel="stylesheet" href="/style.css" />
+                <title>Report Dashboard</title>
             </Head>
             <div className="report-container">
                 <h1>System Reports</h1>
-                <form id="reportForm">
-                    <div className="form-group">
-                        <label htmlFor="reportType">Report Type:</label>
-                        <select id="reportType" name="reportType" required value={reportType} onChange={e => setReportType(e.target.value)}>
-                            <option value="">Select a report type</option>
-                            <option value="currentFlight">Current active flight</option>
-                            <option value="booking">Percentage of booking in every flight</option>
-                            <option value="occupancy">Confirmed payments</option>
-                            <option value="cancellations">Waitlisted passengers in each class</option>
-                            <option value="payments">Average load factor for all planes</option>
-                            <option value="ticketCancelled">Ticket cancelled</option>
-                        </select>
-                    </div>
-                    {showDateField && (
-                        <div className="form-group">
-                            <label htmlFor="date">Date:</label>
-                            <input type="date" id="date" name="date" required={dateRequired} />
-                        </div>
-                    )}
-                    {showFlightNumberField && (
-                        <div className="form-group">
-                            <label htmlFor="flightNumber">Flight Number:</label>
-                            <input type="text" id="flightNumber" name="flightNumber" required={flightNumberRequired} />
-                        </div>
-                    )}
-                    <button type="submit">Generate Report</button>
-                </form>
-                <div id="reportResults">
-                    {/* Report results will be dynamically inserted here */}
-                </div>
+                <select value={reportType} onChange={e => setReportType(e.target.value)}>
+                    <option value="">Select a report type</option>
+                    <option value="currentFlight">Current Active Flights</option>
+                    <option value="booking">Booking Percentage</option>
+                    <option value="occupancy">Confirmed Payments</option>
+                    <option value="Waitlisted">Waitlisted Passengers</option>
+                    <option value="payments">Load Factor</option>
+                    <option value="ticketCancelled">Cancelled Tickets</option>
+                </select>
+                <table>
+                    <tbody>
+                        {renderReportResults()}
+                    </tbody>
+                </table>
             </div>
         </>
     );
 }
-
