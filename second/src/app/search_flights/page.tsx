@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Head from 'next/head';
 import bkEndHandler from "../bkEnd/bkEndHandler"
 import { flights } from '@prisma/client';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 
 
 
@@ -17,10 +17,7 @@ export default function Search_flights() {
     const router = useRouter();
     const bookFlight = (flight: flights, flightClass: string) => {
         alert(`Booking flight: ${flight} in ${flightClass}`);
-        router.push({
-            pathname: '/seats',
-            query: { flightId: flight.flightid }
-        });
+        router.push('/seats/' + flight.flightid);
     };
 
     const flights = getflights();

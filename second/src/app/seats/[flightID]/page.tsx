@@ -2,8 +2,8 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Head from "next/head";
-import bkEndHandler from "../bkEnd/bkEndHandler";
-import { useRouter } from "next/router";
+import bkEndHandler from "../../bkEnd/bkEndHandler";
+import { useRouter } from "next/navigation";
 import { SeatClass, seats } from "@prisma/client";
 
 async function getSeats() {
@@ -11,10 +11,12 @@ async function getSeats() {
   return seatsList;
 }
 
-export default function Seats() {
+export default function Seats({ params }: {
+  params: { flightID: string }
+}) {
   const [seatNumber, setSeatNumber] = useState("");
   const router = useRouter();
-  const flightId = router.query.flightId as string; // Use the flightId to fetch or manipulate flight data
+  const flightId = params.flightID; // Use the flightId to fetch or manipulate flight data
 
   const seats = getSeats();
   //for mapping
