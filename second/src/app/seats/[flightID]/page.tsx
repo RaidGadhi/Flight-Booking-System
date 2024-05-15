@@ -13,33 +13,26 @@ async function getSeats() {
 
 export default function Seats() {
   const [seatNumber, setSeatNumber] = useState("");
-  //   const router = useRouter();
-  const flightId = "0b8c92f0-737b-4767-965b-3973c25ceffd"; //router.query.flightId as string; // Use the flightId to fetch or manipulate flight data
+  const router = useRouter();
+  const flightId = router.query.flightId as string; // Use the flightId to fetch or manipulate flight data
 
-  // const seatslist = await getSeats();
+  const seats = getSeats();
   //for mapping
   const [seats2, setSeat2] = useState<seats[]>([]);
 
-  const [loading, setLoading] = useState(true); // Add loading state
-
   useEffect(() => {
-    async function fetchSeats() {
-      try {
-        const seatsList: seats[] = await getSeats();
-        setSeat2(seatsList.filter((seat) => seat.flightsFlightid === flightId));
-        setLoading(false); // Set loading to false when data is fetched
-      } catch (error) {
+    seats
+      .then((data) => {
+        let filteredSeats = data.filter(
+          (seat) => seat.flightsFlightid === flightId
+        );
+        setSeat2(filteredSeats);
+      })
+      .catch((error) => {
         console.error("Failed to load Seats:", error);
-      }
-    }
-
-    fetchSeats(); // Call the function to fetch seats when the component mounts
-  }, []);
+      });
+  }, [seats]);
   //for mapping
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
 
   const proceedToPayment = (event: React.FormEvent) => {
     event.preventDefault(); // Prevent the form from actually submitting
@@ -56,7 +49,7 @@ export default function Seats() {
     });
   };
 
-  //   let s: seats;
+  let s: seats;
 
   return (
     <>
@@ -75,10 +68,15 @@ export default function Seats() {
               value={seatNumber}
               onChange={(e) => setSeatNumber(e.target.value)}
             >
+              <option value="">Select a seat</option>
+              <option value="1A">1A</option>
+              <option value="1B">1B</option>
+              <option value="2A">2A</option>
+              <option value="2B">2B</option>
               {seats2.map((seat) => (
                 <option value={seat.seatnumber || ""}>
                   {" "}
-                  {seat.seatnumber} - {seat.seatclass}
+                  {seatNumber} - {seat.seatclass}
                 </option>
               ))}
             </select>

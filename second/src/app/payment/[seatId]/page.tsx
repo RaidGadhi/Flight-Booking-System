@@ -3,8 +3,11 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import Head from 'next/head';
 
-export default function Payment() {
+export default function Payment({ params }: {
+    params: { seatId: string }
+}) {
 
+    const seatId = params.seatId;
     const [cardName, setCardName] = useState('');
     const [cardNumber, setCardNumber] = useState('');
     const [expiryDate, setExpiryDate] = useState('');

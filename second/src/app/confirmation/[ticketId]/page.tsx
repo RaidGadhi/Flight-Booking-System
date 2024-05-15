@@ -14,7 +14,10 @@ interface BookingDetails {
     ticketID: string
 }
 
-export default function Confirmation({ details }: { details: BookingDetails }) {
+export default function Confirmation({ params }: {
+    params: { ticketId: string }
+}) {
+    const ticketId = params.ticketId;
     return (
         <>
             <Head>
