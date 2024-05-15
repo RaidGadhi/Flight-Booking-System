@@ -16,7 +16,7 @@ export default function Seats({ params }: {
 }) {
   const [seatNumber, setSeatNumber] = useState("");
   const router = useRouter();
-  const flightId = "0b8c92f0-737b-4767-965b-3973c25ceffd"; //router.query.flightId as string; // Use the flightId to fetch or manipulate flight data
+  const flightId = params.flightID; //router.query.flightId as string; // Use the flightId to fetch or manipulate flight data
 
   // const seatslist = await getSeats();
   //for mapping
@@ -52,10 +52,9 @@ export default function Seats({ params }: {
     }
 
     alert("Seat selected! Proceeding to payment...");
-    router.push('/payment/' + flightId);
+    router.push('/payment/' + seatNumber.seatID);
   };
 
-  //   let s: seats;
 
   return (
     <>
