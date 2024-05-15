@@ -6,14 +6,14 @@ import { useRouter } from "next/navigation";
 import { SeatClass, seats } from "@prisma/client";
 import bkEndHandler from "@/app/bkEnd/bkEndHandler";
 
-async function getSeats({ params }: {
-  params: { flightID: string }
-}) {
+async function getSeats() {
   const seatsList: seats[] = await bkEndHandler.getAllSeats();
   return seatsList;
 }
 
-export default function Seats() {
+export default function Seats({ params }: {
+  params: { flightID: string }
+}) {
   const [seatNumber, setSeatNumber] = useState("");
   const router = useRouter();
   const flightId = "0b8c92f0-737b-4767-965b-3973c25ceffd"; //router.query.flightId as string; // Use the flightId to fetch or manipulate flight data
