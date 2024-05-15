@@ -2,18 +2,20 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Head from "next/head";
-import bkEndHandler from "../bkEnd/bkEndHandler";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { SeatClass, seats } from "@prisma/client";
+import bkEndHandler from "@/app/bkEnd/bkEndHandler";
 
-async function getSeats() {
+async function getSeats({ params }: {
+  params: { flightID: string }
+}) {
   const seatsList: seats[] = await bkEndHandler.getAllSeats();
   return seatsList;
 }
 
 export default function Seats() {
   const [seatNumber, setSeatNumber] = useState("");
-  //   const router = useRouter();
+  const router = useRouter();
   const flightId = "0b8c92f0-737b-4767-965b-3973c25ceffd"; //router.query.flightId as string; // Use the flightId to fetch or manipulate flight data
 
   // const seatslist = await getSeats();
@@ -50,10 +52,7 @@ export default function Seats() {
     }
 
     alert("Seat selected! Proceeding to payment...");
-    router.push({
-      pathname: "/payment",
-      // query: { flightId: flightId, seatId: seat.seatid }
-    });
+    router.push('/payment/' + flightId);
   };
 
   //   let s: seats;
