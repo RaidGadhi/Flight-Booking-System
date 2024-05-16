@@ -27,7 +27,7 @@ export default function Seats({ params }: {
     async function fetchSeats() {
       try {
         const seatsList: seats[] = await getSeats();
-        setSeat2(seatsList.filter((seat) => seat.flightsFlightid === flightId));
+        setSeat2(seatsList.filter((seat) => seat.flightsFlightid === flightId).filter((seat) => seat.isbooked == false));
       } catch (error) {
         console.error("Failed to load Seats:", error);
       }

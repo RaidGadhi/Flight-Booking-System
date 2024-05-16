@@ -38,8 +38,11 @@ export default function Payment({ params }: {
                 ticketno: ticket.ticketno //add tickedno here
             }
             const payment = await bkEndHandler.createPayment(paymentData);
+            const ss = await bkEndHandler.getseat(seatId);
+            ss.isbooked = true;
+            const s2 = await bkEndHandler.updateSeat(ss);
 
-            router.push('/confirmation' + payment.ticketno); // Adjust according to your actual confirmation page path
+            router.push('/confirmation/' + payment.ticketno); // Adjust according to your actual confirmation page path
         } catch (error) {
             console.error('Error processing payment:', error);
             alert('Payment failed, please try again.');
