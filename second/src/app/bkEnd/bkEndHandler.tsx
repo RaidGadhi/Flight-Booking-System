@@ -202,6 +202,44 @@ export default class bkEndHandler {
                 console.error(error);
                 return undefined;
             });
+
+            
     }
+
+    static async updatePassenger(p: passenger): Promise<passenger> {
+        return await fetch("/api/updatePassenger", {
+            method: "POST",
+            body: JSON.stringify(p),
+        })
+            .then(async (res) => {
+                if (res.status == 200) {
+                    return await res.json();
+                } else {
+                    return undefined;
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+                return undefined;
+            });
+    }
+    static async getWaitlistedPassengers(): Promise<passenger[]> {
+        return await fetch("/api/getWaitlistedPassengers", {
+            method: "GET",
+        })
+            .then(async (res) => {
+                if (res.status == 200) {
+                    return await res.json();
+                } else {
+                    return [];
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+                return [];
+            });
+    }
+    
+    
 
 }
