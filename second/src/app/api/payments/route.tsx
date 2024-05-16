@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
                 amount: p.amount,
                 paymentdate: p.paymentdate,
                 paymentmethod: p.paymentmethod,
-                passengerid: p.passengerid
+                ticketno: p.ticketno
             }
         });
         return NextResponse.json(payment);

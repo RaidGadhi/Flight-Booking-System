@@ -54,6 +54,8 @@ model payments {
   paymentdate   DateTime?
   paymentmethod String?
   passengerid   String?
+  ticketno      String     @unique
+  ticket        tickets    @relation(fields: [ticketno], references: [ticketno])
   passenger     passenger? @relation(fields: [passengerid], references: [passengerid], onDelete: NoAction, onUpdate: NoAction)
 }
 
@@ -78,6 +80,8 @@ model tickets {
   price       Int?
   // class       String?
   seatid      String?       @unique
+  paymentid   String?
+  payment     payments?
   flights     flights?      @relation(fields: [flightid], references: [flightid], onDelete: NoAction, onUpdate: NoAction)
   passenger   passenger?    @relation(fields: [passengerid], references: [passengerid], onDelete: NoAction, onUpdate: NoAction)
   seats       seats?        @relation(fields: [seatid], references: [seatid], onDelete: NoAction, onUpdate: NoAction)

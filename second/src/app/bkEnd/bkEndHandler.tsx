@@ -16,7 +16,7 @@ export interface paymentsInterface {
     amount: number,
     paymentdate: Date,
     paymentmethod: string,
-    passengerid: string
+    ticketno: string,
 }
 
 export interface passengerInterface {
