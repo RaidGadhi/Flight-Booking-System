@@ -2,20 +2,27 @@
 import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import bkEndHandler from "../bkEnd/bkEndHandler";
-import { passenger, TicketStatus, tickets } from '@prisma/client';
+import { passenger, TicketStatus, tickets, seats } from '@prisma/client';
 
-async function getWaitlistedPassengers() {
-    const passengers: passenger[] = await bkEndHandler.getWaitlistedPassengers();
-    return passengers;
+async function allFilteredTickets() {
+    const _tickets: tickets[] = await bkEndHandler.getAllTickets();
+    // const _filteredtickets = _tickets.filter ( ticket.status === TicketStatus.Waitlisted)
+    return _filteredtickets;
 }
 
-async function promoteWaitlistedPassenger(ticketId: string): Promise<void> {
+async function promoteWaitlistedTicket(ticketId: string): Promise<void> {
     try {
         const ticket: tickets | null = await bkEndHandler.getTicket(ticketId);
         if (ticket && ticket.status === TicketStatus.Waitlisted) {
             ticket.status = TicketStatus.Active;
             const updatedTicket: tickets = await bkEndHandler.updateTicket(ticket);
             console.log("Ticket promoted successfully:", updatedTicket);
+
+            //get seat
+            const seat: seats = bkEndHandler.getseat("seatid")
+            seat.isbooked = true
+            //update seat.isbooked to true
+            bkEndHandler.updateSeat(seat);
         } else {
             console.log("Ticket not found or not in waitlisted status.");
         }
@@ -59,7 +66,7 @@ export default function PromoteWaitlist() {
                         <tr><th>Name</th></tr>
                     </thead>
                     <tbody>
-                        {passengers.map((passenger) => (
+                        {passengers.map((passenger) => ( //repalce with filtered tickets also add button
                             <tr key={passenger.passengerid}>
                                 <td>{passenger.name}</td>
                             </tr>
