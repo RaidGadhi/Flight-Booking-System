@@ -1,62 +1,109 @@
 "use client";
-import React, { useState } from 'react';
-import Link from 'next/link';
+import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
+import bkEndHandler from "../bkEnd/bkEndHandler";
+import { passenger } from '@prisma/client';
 
-export default function Promote_waitlist() {
-    const [passengerId, setPassengerId] = useState('');
-    const [flightNumber, setFlightNumber] = useState('');
-    const [newSeat, setNewSeat] = useState('');
+async function getWaitlistedPassengers() {
+    const passengers: passenger[] = await bkEndHandler.getWaitlistedPassengers();
+    return passengers;
+}
 
-    const promotePassenger = (event: React.FormEvent) => {
-        event.preventDefault(); // Prevent the form from actually submitting
+async function approvePassenger(passenger: passenger) {
+    passenger.status = 'approved';
+    await bkEndHandler.updatePassenger(passenger); // Assuming you have an update function in bkEndHandler
+}
 
-        if (!passengerId || !flightNumber || !newSeat) {
-            alert('Please fill in all fields.');
-            return;
-        }
+async function processWaitlistedPassengers() {
+    const passengers: passenger[] = await getWaitlistedPassengers();
+    for (const passenger of passengers) {
+        await approvePassenger(passenger);
+    }
+}
 
-        alert(`Passenger ${passengerId} has been promoted to seat ${newSeat} on flight ${flightNumber}.`);
-        // Implement the logic to send this data to the server or process it as required
-    };
+export default function PromoteWaitlist() {
+    const [passengers, setPassengers] = useState<passenger[]>([]);
+
+    useEffect(() => {
+        getWaitlistedPassengers()
+            .then((data) => {
+                setPassengers(data);
+            })
+            .catch((error) => {
+                console.error("Failed to load passengers:", error);
+            });
+    }, []);
+
+    useEffect(() => {
+        processWaitlistedPassengers()
+            .then(() => {
+                console.log("All waitlisted passengers processed.");
+            })
+            .catch((error) => {
+                console.error("Failed to process waitlisted passengers:", error);
+            });
+    }, []);
 
     return (
         <>
             <Head>
                 <title>Promote Waitlisted Passenger</title>
+                <style>{`
+                    .passengers-container {
+                        max-width: 1200px;
+                        margin: 0 auto;
+                        padding: 20px;
+                    }
+            
+                    h1 {
+                        text-align: center;
+                        margin-bottom: 20px;
+                    }
+            
+                    .passengers-table {
+                        width: 100%;
+                        border-collapse: collapse; 
+                        margin-bottom: 20px;
+                    }
+                    
+                    .passengers-table th, .passengers-table td {
+                        border: 1px solid #ddd; 
+                        padding: 12px; 
+                        text-align: center; 
+                    }
+                    
+                    .passengers-table th {
+                        background-color: #f4f4f4; 
+                        font-weight: bold; 
+                    }
+                    
+                    .passengers-table tbody tr:nth-child(even) {
+                        background-color: #f9f9f9; 
+                    }
+                    
+                    .passengers-table tbody tr:hover {
+                        background-color: #f1f1f1; 
+                    }
+                    
+                `}</style>
             </Head>
-            <div className="promote-container">
-                <h1>Promote Waitlisted Passenger</h1>
-                <form onSubmit={promotePassenger}>
-                    <div className="form-group">
-                        <label htmlFor="passengerId">Passenger ID:</label>
-                        <input type="text" id="passengerId" name="passengerId"
-                            placeholder="Enter Passenger ID" required
-                            value={passengerId} onChange={e => setPassengerId(e.target.value)} />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="flightNumber">Flight Number:</label>
-                        <input type="text" id="flightNumber" name="flightNumber"
-                            placeholder="Enter Flight Number" required
-                            value={flightNumber} onChange={e => setFlightNumber(e.target.value)} />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="newSeat">New Seat Number:</label>
-                        <select id="newSeat" name="newSeat" required
-                            value={newSeat} onChange={e => setNewSeat(e.target.value)}>
-                            <option value="">Select a seat</option>
-                            <option value="1A">1A</option>
-                            <option value="1B">1B</option>
-                            <option value="2A">2A</option>
-                            <option value="2B">2B</option>
-                            {/* Additional seats can be added here */}
-                        </select>
-                    </div>
-                    <button type="submit">Promote</button>
-                </form>
+            <div className="passengers-container">
+                <h1>Waitlisted Passengers</h1>
+                <table className="passengers-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {passengers.map((passenger) => (
+                            <tr key={passenger.passengerid}>
+                                <td>{passenger.name}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             </div>
         </>
     );
 }
-
-
