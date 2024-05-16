@@ -12,8 +12,8 @@ async function getWaitlistedPassengers() {
 async function promoteWaitlistedPassenger(ticketId: string): Promise<void> {
     try {
         const ticket: tickets | null = await bkEndHandler.getTicket(ticketId);
-        if (ticket && ticket.status === TicketStatus.WAITLISTED) {
-            ticket.status = TicketStatus.CONFIRMED;
+        if (ticket && ticket.status === TicketStatus.Waitlisted) {
+            ticket.status = TicketStatus.Active;
             const updatedTicket: tickets = await bkEndHandler.updateTicket(ticket);
             console.log("Ticket promoted successfully:", updatedTicket);
         } else {
