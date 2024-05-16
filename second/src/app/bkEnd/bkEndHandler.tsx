@@ -96,6 +96,24 @@ export default class bkEndHandler {
                 return undefined;
             });
     }
+
+    static async getFlight(id: string): Promise<flights> { //change promise type and function names
+        return await fetch("/api/flights", { //change api directory
+            method: "POST",
+            body: JSON.stringify(id),
+        })
+            .then(async (res) => {
+                if (res.status == 200) {
+                    return await res.json();
+                } else {
+                    return undefined;
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+                return undefined;
+            });
+    }
     // const ticket : ticketsInterface = {}
     //createTicket(ticket) ---> tickit:tickets
     static async createTicket(t: ticketsInterface): Promise<tickets> { //change promise type and function name
@@ -203,7 +221,7 @@ export default class bkEndHandler {
                 return undefined;
             });
 
-            
+
     }
 
     static async updatePassenger(p: passenger): Promise<passenger> {
@@ -223,6 +241,7 @@ export default class bkEndHandler {
                 return undefined;
             });
     }
+
     static async getWaitlistedPassengers(): Promise<passenger[]> {
         return await fetch("/api/getWaitlistedPassengers", {
             method: "GET",
@@ -239,7 +258,44 @@ export default class bkEndHandler {
                 return [];
             });
     }
-    
-    
+
+    static async getTicket(id: string): Promise<tickets> { //change promise type and function name
+        return await fetch("/api/findticket", { //change api directory
+            method: "POST",
+            body: JSON.stringify(id),
+        })
+            .then(async (res) => {
+                if (res.status == 200) {
+                    return await res.json();
+                } else {
+                    return undefined;
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+                return undefined;
+            });
+    }
+
+    static async getseat(id: string): Promise<seats> { //change promise type and function name
+        return await fetch("/api/findseat", { //change api directory
+            method: "POST",
+            body: JSON.stringify(id),
+        })
+            .then(async (res) => {
+                if (res.status == 200) {
+                    return await res.json();
+                } else {
+                    return undefined;
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+                return undefined;
+            });
+    }
+
+
+
 
 }

@@ -1,23 +1,64 @@
 "use client";
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Head from 'next/head';
+import bkEndHandler from '@/app/bkEnd/bkEndHandler';
+import { flights, seats, tickets } from '@prisma/client';
 
-interface BookingDetails {
-    flightNumber: string;
-    departureCity: string;
-    departureDateTime: string;
-    arrivalCity: string;
-    arrivalDateTime: string;
-    travelClass: string;
-    price: string;
-    ticketID: string
+async function GetTicket(id: string) {
+    const _ticket: tickets = await bkEndHandler.getTicket(id);
+    return _ticket;
+}
+async function Getflight(id: string) {
+    const _flight: flights = await bkEndHandler.getFlight(id);;
+    return _flight;
+}
+async function GetSeat(id: string) {
+    const _seat: seats = await bkEndHandler.getseat(id);;
+    return _seat;
 }
 
 export default function Confirmation({ params }: {
     params: { ticketId: string }
 }) {
     const ticketId = params.ticketId;
+
+    const ticket = GetTicket(ticketId);
+    const [ticket2, set1] = useState<tickets>();
+    useEffect(() => {
+        ticket
+            .then((data) => {
+                set1(data);
+            })
+            .catch((error) => {
+                console.error("Failed to load diseases:", error);
+            });
+    }, [ticket]);
+
+    const flight = Getflight(ticket2?.ticketno || "");
+    const [flight2, set2] = useState<flights>();
+    useEffect(() => {
+        flight
+            .then((data) => {
+                set2(data);
+            })
+            .catch((error) => {
+                console.error("Failed to load diseases:", error);
+            });
+    }, [flight]);
+
+    const seat = GetSeat(ticket2?.ticketno || "");
+    const [seat2, set3] = useState<seats>();
+    useEffect(() => {
+        seat
+            .then((data) => {
+                set3(data);
+            })
+            .catch((error) => {
+                console.error("Failed to load diseases:", error);
+            });
+    }, [seat]);
+
     return (
         <>
             <Head>
@@ -27,12 +68,12 @@ export default function Confirmation({ params }: {
                 <h1>Booking Confirmed!</h1>
                 <p>Thank you for booking with us. Your flight details are confirmed as follows:</p>
                 <div className="booking-details">
-                    <p><strong>Flight:</strong> {details.flightNumber}</p>
-                    <p><strong>Departure:</strong> {details.departureCity} - {details.departureDateTime}</p>
-                    <p><strong>Arrival:</strong> {details.arrivalCity} - {details.arrivalDateTime}</p>
-                    <p><strong>Class:</strong> {details.travelClass}</p>
-                    <p><strong>Price:</strong> {details.price}</p>
-                    <p><strong>ticketID:</strong> {details.ticketID}</p>
+                    <p><strong>Flight:</strong> {flight2?.flightno}</p>
+                    <p><strong>Departure:</strong> {flight2?.srccity} - {flight2?.flightdate?.toDateString()}</p>
+                    <p><strong>Arrival:</strong> {flight2?.dstcity}</p>
+                    <p><strong>Class:</strong> {seat2?.seatclass}</p>
+                    <p><strong>Price:</strong> {ticket2?.price}</p>
+                    <p><strong>ticketID:</strong> {ticket2?.ticketno}</p>
                 </div>
                 <div className="action-buttons">
                     <button onClick={() => window.print()}>Print Ticket</button>

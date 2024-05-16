@@ -1,8 +1,8 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
-import bkEndHandler from "../bkEnd/bkEndHandler";
 import { passenger } from '@prisma/client';
+import bkEndHandler from '@/app/bkEnd/bkEndHandler';
 
 async function getWaitlistedPassengers() {
     const passengers: passenger[] = await bkEndHandler.getPassenger({ status: 'waitlisted' });
