@@ -2,27 +2,28 @@
 import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import bkEndHandler from "../bkEnd/bkEndHandler";
-import { passenger, TicketStatus, tickets, seats } from '@prisma/client';
+import { TicketStatus, tickets, seats } from '@prisma/client';
 
 async function allFilteredTickets() {
     const _tickets: tickets[] = await bkEndHandler.getAllTickets();
-    // const _filteredtickets = _tickets.filter ( ticket.status === TicketStatus.Waitlisted)
-    return _filteredtickets;
+    const _filteredTickets = _tickets.filter(ticket => ticket.status === TicketStatus.Waitlisted);
+    return _filteredTickets;
 }
 
-async function promoteWaitlistedTicket(ticketId: string): Promise<void> {
+async function promoteWaitlistedTicket(ticketNo: string): Promise<void> {
     try {
-        const ticket: tickets | null = await bkEndHandler.getTicket(ticketId);
+        const ticket: tickets | null = await bkEndHandler.getTicket(ticketNo);
         if (ticket && ticket.status === TicketStatus.Waitlisted) {
             ticket.status = TicketStatus.Active;
             const updatedTicket: tickets = await bkEndHandler.updateTicket(ticket);
             console.log("Ticket promoted successfully:", updatedTicket);
 
-            //get seat
-            const seat: seats = bkEndHandler.getseat("seatid")
-            seat.isbooked = true
-            //update seat.isbooked to true
-            bkEndHandler.updateSeat(seat);
+            // Ensure seatid is not null before using it
+            if (ticket.seatid) {
+                const seat: seats = await bkEndHandler.getseat(ticket.seatid); 
+                seat.isbooked = true;
+                await bkEndHandler.updateSeat(seat);
+            }
         } else {
             console.log("Ticket not found or not in waitlisted status.");
         }
@@ -32,17 +33,17 @@ async function promoteWaitlistedTicket(ticketId: string): Promise<void> {
 }
 
 export default function PromoteWaitlist() {
-    const [passengers, setPassengers] = useState<passenger[]>([]);
+    const [tickets, setTickets] = useState<tickets[]>([]);
 
     useEffect(() => {
         let isMounted = true; // flag to check if component is mounted
 
-        getWaitlistedPassengers()
+        allFilteredTickets()
             .then((data) => {
-                if (isMounted) setPassengers(data);
+                if (isMounted) setTickets(data);
             })
             .catch((error) => {
-                console.error("Failed to load passengers:", error);
+                console.error("Failed to load tickets:", error);
             });
 
         return () => {
@@ -50,25 +51,23 @@ export default function PromoteWaitlist() {
         };
     }, []);
 
-    // Example usage, should be triggered based on a specific condition or event
-    // promoteWaitlistedPassenger("your-ticket-id-here");
-
     return (
         <>
             <Head>
-                <title>Promote Waitlisted Passenger</title>
+                <title>Promote Waitlisted Tickets</title>
                 <style>{/* CSS styles omitted for brevity */}</style>
             </Head>
-            <div className="passengers-container">
-                <h1>Waitlisted Passengers</h1>
-                <table className="passengers-table">
+            <div className="tickets-container">
+                <h1>Waitlisted Tickets</h1>
+                <table className="tickets-table">
                     <thead>
-                        <tr><th>Name</th></tr>
+                        <tr><th>Ticket No</th><th>Action</th></tr>
                     </thead>
                     <tbody>
-                        {passengers.map((passenger) => ( //repalce with filtered tickets also add button
-                            <tr key={passenger.passengerid}>
-                                <td>{passenger.name}</td>
+                        {tickets.map((ticket) => (
+                            <tr key={ticket.ticketno}>
+                                <td>{ticket.ticketno}</td>
+                                <td><button onClick={() => promoteWaitlistedTicket(ticket.ticketno)}>Promote</button></td>
                             </tr>
                         ))}
                     </tbody>
