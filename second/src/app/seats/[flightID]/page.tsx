@@ -51,25 +51,31 @@ export default function Seats({ params }: {
 
   return (
     <>
-      <form onSubmit={proceedToPayment}>
-        <select
-          id="seatNumber"
-          name="seatNumber"
-          required
-          value={seatNumber ? seatNumber.seatid : ''}
-          onChange={(e) => {
-            const selectedSeat = seats2.find(seat => seat.seatid === e.target.value);
-            setSeatNumber(selectedSeat || null);
-          }}
-        >
-          {seats2.map((seat, index) => (
-            <option key={index} value={seat.seatid}>
-              {seat.seatnumber} - {seat.seatclass}
-            </option>
-          ))}
-        </select>
-        <button type="submit">Confirm Seat</button>
-      </form>
+      <Head>
+        <title>Select Your Seat</title>
+      </Head>
+      <div className="seats-container">
+        <h1>Select Your Seat</h1>
+        <form onSubmit={proceedToPayment}>
+          <select
+            id="seatNumber"
+            name="seatNumber"
+            required
+            value={seatNumber ? seatNumber.seatid : ''}
+            onChange={(e) => {
+              const selectedSeat = seats2.find(seat => seat.seatid === e.target.value);
+              setSeatNumber(selectedSeat || null);
+            }}
+          >
+            {seats2.map((seat, index) => (
+              <option key={index} value={seat.seatid}>
+                {seat.seatnumber} - {seat.seatclass}
+              </option>
+            ))}
+          </select>
+          <button type="submit">Confirm Seat</button>
+        </form>
+      </div>
     </>
   );
 }
