@@ -3,7 +3,8 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import Head from 'next/head';
 import { useRouter } from 'next/navigation';
-import bkEndHandler, { paymentsInterface } from '@/app/bkEnd/bkEndHandler'; // Assuming the path to your backend handler
+import bkEndHandler, { paymentsInterface, ticketsInterface } from '@/app/bkEnd/bkEndHandler'; // Assuming the path to your backend handler
+import { TicketStatus } from '@prisma/client';
 
 export default function Payment({ params }: {
     params: { seatId: string }
@@ -18,17 +19,27 @@ export default function Payment({ params }: {
     const processPayment = async (e: React.FormEvent) => {
         e.preventDefault(); // Prevent the form from actually submitting
 
-        const paymentData: paymentsInterface = { //fill it out
-            amount: 0,
-            paymentdate: undefined,
-            paymentmethod: '',
-            ticketno: ''
-        }
 
         try {
-            await bkEndHandler.createPayment(paymentData);
+            const seat = await bkEndHandler.getseat(seatId);
+            const ticketData: ticketsInterface = {
+                flightid: seat.flightsFlightid ?? "",
+                status: TicketStatus.Active,
+                bookingdate: new Date(),
+                price: 100,
+                seatid: seat.seatid
+            }
+            const ticket = await bkEndHandler.createTicket(ticketData);
+            //create a ticket
+            const paymentData: paymentsInterface = { //fill it out
+                amount: ticket.price || 100,
+                paymentdate: new Date(),
+                paymentmethod: 'Mada',
+                ticketno: ticket.ticketno //add tickedno here
+            }
+            const payment = await bkEndHandler.createPayment(paymentData);
 
-            router.push('/confirmation' + ticket.ticektid); // Adjust according to your actual confirmation page path
+            router.push('/confirmation' + payment.ticketno); // Adjust according to your actual confirmation page path
         } catch (error) {
             console.error('Error processing payment:', error);
             alert('Payment failed, please try again.');

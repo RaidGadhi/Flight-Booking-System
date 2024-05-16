@@ -4,7 +4,6 @@ import { TicketStatus, aircraft, flights, passenger, payments, seats, tickets } 
 //     Id: string
 // }
 export interface ticketsInterface {
-    passengerid: string,
     flightid: string,
     status: TicketStatus,
     bookingdate: Date,

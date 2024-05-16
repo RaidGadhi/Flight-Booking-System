@@ -21,6 +21,7 @@ async function GetSeat(id: string) {
 export default function Confirmation({ params }: {
     params: { ticketId: string }
 }) {
+
     const ticketId = params.ticketId;
 
     const ticket = GetTicket(ticketId);

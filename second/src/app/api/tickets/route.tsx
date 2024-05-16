@@ -11,7 +11,6 @@ export async function POST(request: NextRequest) {
 
         const ticket = await prisma.tickets.create({
             data: {
-                passengerid: t.passengerid, // Ensure this ID exists in your passenger table
                 flightid: t.flightid,       // Ensure this ID exists in your flights table
                 status: t.status,
                 bookingdate: t.bookingdate,
