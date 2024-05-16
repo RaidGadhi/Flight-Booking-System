@@ -2,8 +2,8 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Head from 'next/head';
-import { useRouter } from 'next/router';
-import bkEndHandler from '@/app/bkEnd/bkEndHandler'; // Assuming the path to your backend handler
+import { useRouter } from 'next/navigation';
+import bkEndHandler, { paymentsInterface } from '@/app/bkEnd/bkEndHandler'; // Assuming the path to your backend handler
 
 export default function Payment({ params }: {
     params: { seatId: string }
@@ -18,21 +18,17 @@ export default function Payment({ params }: {
     const processPayment = async (e: React.FormEvent) => {
         e.preventDefault(); // Prevent the form from actually submitting
 
-        const paymentData = {
-            cardName,
-            cardNumber,
-            expiryDate,
-            cvv,
-            seatId,
-        };
+        const paymentData: paymentsInterface = { //fill it out
+            amount: 0,
+            paymentdate: undefined,
+            paymentmethod: '',
+            ticketno: ''
+        }
 
         try {
             await bkEndHandler.createPayment(paymentData);
-            if (router.isReady) {
-                router.push('/confirmation'); // Adjust according to your actual confirmation page path
-            } else {
-                console.error('Router not ready');
-            }
+
+            router.push('/confirmation' + ticket.ticektid); // Adjust according to your actual confirmation page path
         } catch (error) {
             console.error('Error processing payment:', error);
             alert('Payment failed, please try again.');
