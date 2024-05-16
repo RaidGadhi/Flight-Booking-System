@@ -1,61 +1,109 @@
 "use client";
-import React, { useState } from 'react';
-import Link from 'next/link';
+import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
+import bkEndHandler from "../bkEnd/bkEndHandler";
+import { passenger } from '@prisma/client';
 
-export default function Payment({ params }: {
-    params: { seatId: string }
-}) {
+async function getWaitlistedPassengers() {
+    const passengers: passenger[] = await bkEndHandler.getPassenger({ status: 'waitlisted' });
+    return passengers;
+}
 
-    const seatId = params.seatId;
-    const [cardName, setCardName] = useState('');
-    const [cardNumber, setCardNumber] = useState('');
-    const [expiryDate, setExpiryDate] = useState('');
-    const [cvv, setCvv] = useState('');
-    //const router = useRouter();
+async function approvePassenger(passenger: passenger) {
+    passenger.status = 'approved';
+    await bkEndHandler.updatePassenger(passenger); // Assuming you have an update function in bkEndHandler
+}
 
-    const processPayment = async (e: React.FormEvent) => {
-        e.preventDefault(); // Prevent the form from actually submitting
-        alert('Payment successful! Redirecting to confirmation...');
+async function processWaitlistedPassengers() {
+    const passengers: passenger[] = await getWaitlistedPassengers();
+    for (const passenger of passengers) {
+        await approvePassenger(passenger);
+    }
+}
 
-        // Example: redirect after processing payment
-        // Assuming flight details are passed via query params or state management
-        // const flightNumber = router.query.flightNumber as string;
-        // const flightClass = router.query.class as string;
-        // router.push(`/confirmation?flightNumber=${flightNumber}&class=${flightClass}`);
-    };
+export default function PromoteWaitlist() {
+    const [passengers, setPassengers] = useState<passenger[]>([]);
+
+    useEffect(() => {
+        getWaitlistedPassengers()
+            .then((data) => {
+                setPassengers(data);
+            })
+            .catch((error) => {
+                console.error("Failed to load passengers:", error);
+            });
+    }, []);
+
+    useEffect(() => {
+        processWaitlistedPassengers()
+            .then(() => {
+                console.log("All waitlisted passengers processed.");
+            })
+            .catch((error) => {
+                console.error("Failed to process waitlisted passengers:", error);
+            });
+    }, []);
+
     return (
         <>
             <Head>
-                <title>Complete Your Payment</title>
+                <title>Promote Waitlisted Passenger</title>
+                <style>{`
+                    .passengers-container {
+                        max-width: 1200px;
+                        margin: 0 auto;
+                        padding: 20px;
+                    }
+            
+                    h1 {
+                        text-align: center;
+                        margin-bottom: 20px;
+                    }
+            
+                    .passengers-table {
+                        width: 100%;
+                        border-collapse: collapse; 
+                        margin-bottom: 20px;
+                    }
+                    
+                    .passengers-table th, .passengers-table td {
+                        border: 1px solid #ddd; 
+                        padding: 12px; 
+                        text-align: center; 
+                    }
+                    
+                    .passengers-table th {
+                        background-color: #f4f4f4; 
+                        font-weight: bold; 
+                    }
+                    
+                    .passengers-table tbody tr:nth-child(even) {
+                        background-color: #f9f9f9; 
+                    }
+                    
+                    .passengers-table tbody tr:hover {
+                        background-color: #f1f1f1; 
+                    }
+                    
+                `}</style>
             </Head>
-            <div className="payment-container">
-                <h1>Payment Details</h1>
-                <form onSubmit={processPayment}>
-                    <div className="form-group">
-                        <label htmlFor="cardName">Name on Card:</label>
-                        <input type="text" id="cardName" name="cardName" placeholder="John Doe"
-                            value={cardName} onChange={e => setCardName(e.target.value)} required />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="cardNumber">Card Number:</label>
-                        <input type="text" id="cardNumber" name="cardNumber" placeholder="1234 5678 9101 1121"
-                            value={cardNumber} onChange={e => setCardNumber(e.target.value)} required />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="expDate">Expiry Date:</label>
-                        <input type="month" id="expDate" name="expDate"
-                            value={expiryDate} onChange={e => setExpiryDate(e.target.value)} required />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="cvv">CVV:</label>
-                        <input type="text" id="cvv" name="cvv" placeholder="123"
-                            value={cvv} onChange={e => setCvv(e.target.value)} required />
-                    </div>
-                    <button type="submit">Pay Now</button>
-                </form>
+            <div className="passengers-container">
+                <h1>Waitlisted Passengers</h1>
+                <table className="passengers-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {passengers.map((passenger) => (
+                            <tr key={passenger.passengerid}>
+                                <td>{passenger.name}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             </div>
         </>
     );
 }
-
